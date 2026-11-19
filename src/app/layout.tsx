@@ -19,7 +19,38 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ko" className={`${notoSansKr.variable} h-full antialiased`}>
-      <body className="min-h-full font-sans text-[#2e294e]">
+      <body className="relative min-h-full font-sans text-[#2e294e]">
+        {/* 배경 전체에 은은하게 떠 있는 하트와 별 장식 (클릭 방해 방지를 위해 pointer-events-none 적용) */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none"
+        >
+          <span className="absolute left-[8%] top-[10%] text-2xl opacity-55">
+            ✨
+          </span>
+          <span className="absolute right-[10%] top-[14%] text-3xl opacity-50">
+            🩷
+          </span>
+          <span className="absolute left-[14%] top-[38%] text-xl opacity-45">
+            ⭐
+          </span>
+          <span className="absolute right-[7%] top-[44%] text-2xl opacity-55">
+            🌟
+          </span>
+          <span className="absolute left-[6%] bottom-[24%] text-3xl opacity-50">
+            🩵
+          </span>
+          <span className="absolute right-[12%] bottom-[18%] text-2xl opacity-55">
+            ✨
+          </span>
+          <span className="absolute left-[22%] bottom-[8%] text-xl opacity-45">
+            🩷
+          </span>
+          <span className="absolute right-[24%] top-[8%] text-lg opacity-45">
+            ⭐
+          </span>
+        </div>
+
         {/* PC에서도 휴대폰 화면처럼 보이도록 전체 틀을 가운데 정렬하고 최대 너비를 480px로 제한합니다. */}
         <div className="mx-auto flex min-h-screen w-full max-w-[480px] flex-col px-5">
           {/* 모든 페이지 상단에 공통으로 보이는 헤더 영역 */}

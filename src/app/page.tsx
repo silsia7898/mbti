@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col justify-between gap-6">
       {/* 메인 소개 카드 영역 */}
-      <section className="flex flex-col items-center rounded-3xl bg-white/90 px-6 py-9 text-center shadow-lg shadow-purple-100/70 ring-1 ring-white">
+      <section className="flex flex-col items-center rounded-3xl bg-white/90 px-6 py-9 text-center shadow-lg shadow-teal-100/70 ring-1 ring-white">
         {/* 상단 파스텔 배지 */}
         <span className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-pink-50 px-3.5 py-1.5 text-xs font-bold text-[#d64d86] ring-1 ring-pink-100">
           ✨ 몽글몽글 성격 유형 테스트
@@ -43,13 +43,15 @@ export default function Home() {
           12개의 간단한 질문에 답하고, 나를 닮은 3D 동물 캐릭터를 만나보세요.
         </p>
 
-        {/* 검사 시작하기 버튼 (/test 경로로 이동) */}
+        {/* 검사 시작하기 버튼 (/test 경로로 이동, 한눈에 띄도록 아주 큼직하게 배치) */}
         <Link
           href="/test"
-          className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#ff8fb1] via-[#c79dff] to-[#8cc8ff] px-6 py-4 text-lg font-extrabold text-white shadow-md shadow-purple-200/80 transition hover:scale-[1.01] hover:shadow-lg active:scale-[0.99]"
+          className="mt-7 flex min-h-[88px] w-full items-center justify-center gap-3 rounded-3xl bg-gradient-to-r from-[#ff8fb1] via-[#c79dff] to-[#8cc8ff] px-8 py-6 text-2xl font-extrabold text-white shadow-lg shadow-purple-200/90 transition hover:scale-[1.01] hover:shadow-xl active:scale-[0.99]"
         >
           <span>검사 시작하기</span>
-          <span aria-hidden="true">→</span>
+          <span aria-hidden="true" className="text-2xl">
+            →
+          </span>
         </Link>
       </section>
 

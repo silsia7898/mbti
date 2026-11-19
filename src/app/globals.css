@@ -2,7 +2,7 @@
 
 /* 서비스 전체에서 사용할 기본 색상 변수 */
 :root {
-  --background: #fff9fc;
+  --background: #f2fcf8;
   --foreground: #2e294e;
 }
 
@@ -13,9 +13,9 @@
   --font-sans: var(--font-noto-sans-kr), "Noto Sans KR", sans-serif;
 }
 
-/* 기본 배경과 글자 색상을 부드러운 파스텔 톤으로 지정 */
+/* 기본 배경과 글자 색상을 연한 민트색 파스텔 톤으로 지정 */
 body {
-  background: linear-gradient(180deg, #fff7fb 0%, #f5f3ff 55%, #eef9ff 100%);
+  background: linear-gradient(180deg, #f3fcf8 0%, #e3f9f0 55%, #edfbf6 100%);
   color: var(--foreground);
   font-family: var(--font-noto-sans-kr), "Noto Sans KR", sans-serif;
 }
