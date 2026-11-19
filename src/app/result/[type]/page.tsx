@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getMbtiTypeInfo } from "@/data/types";
 import ShareResultButton from "@/components/ShareResultButton";
+import CharacterViewer from "@/components/three/CharacterViewer";
 
 // 실제로 params를 읽어 결과 화면을 렌더링하는 내부 컴포넌트
 async function ResultContent({
@@ -59,12 +60,16 @@ async function ResultContent({
           {typeInfo.nickname}
         </p>
 
-        {/* 2) 캐릭터 자리: 대표 색상 배경의 둥근 상자 안에 캐릭터 이름만 표시 */}
+        {/* 2) 캐릭터 자리: 대표 색상 배경의 둥근 상자 안에 해당 유형의 3D 캐릭터 표시 */}
         <div
-          className="mt-6 flex h-44 w-full items-center justify-center rounded-3xl shadow-inner ring-1 ring-white/80"
-          style={{ backgroundColor: typeInfo.color }}
+          className="mt-6 flex w-full flex-col items-center rounded-3xl px-4 pb-4 pt-2 shadow-inner ring-1 ring-white/80"
+          style={{ backgroundColor: `${typeInfo.color}aa` }}
         >
-          <span className="text-2xl font-extrabold text-[#2e294e]">
+          <CharacterViewer
+            typeCode={typeInfo.code}
+            className="h-[310px] w-full"
+          />
+          <span className="mt-1 rounded-full bg-white/85 px-4 py-1 text-sm font-extrabold text-[#2e294e] shadow-sm">
             {typeInfo.character.name}
           </span>
         </div>
