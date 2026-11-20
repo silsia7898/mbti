@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { QUESTIONS, type MbtiTrait } from "@/data/questions";
 import { calculateMbtiType } from "@/lib/mbti";
+import { supabase } from "@/lib/supabase";
 
 export default function TestPage() {
   const router = useRouter();
@@ -24,17 +25,24 @@ export default function TestPage() {
   const progressPercent = ((currentIndex + 1) / totalCount) * 100;
 
   // 선택지 버튼을 눌렀을 때 실행되는 함수
-  const handleSelectOption = (trait: MbtiTrait) => {
+  const handleSelectOption = async (trait: MbtiTrait) => {
     const nextAnswers = [...answers];
     nextAnswers[currentIndex] = trait;
     setAnswers(nextAnswers);
 
-    // 마지막(12번째) 문항이면 유형을 계산해 결과 페이지로 이동합니다.
+    // 마지막(12번째) 문항이면 유형을 계산하고, 로그인한 경우 결과를 저장한 뒤 결과 페이지로 이동합니다.
     if (currentIndex === totalCount - 1) {
       const validTraits = nextAnswers.filter(
         (item): item is MbtiTrait => item !== null
       );
       const mbtiType = calculateMbtiType(validTraits);
+
+      // 로그인한 회원이면 test_results 테이블에 자동으로 결과를 저장합니다.
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData.user) {
+        await supabase.from("test_results").insert({ mbti_type: mbtiType });
+      }
+
       router.push(`/result/${mbtiType}`);
       return;
     }

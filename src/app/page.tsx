@@ -1,5 +1,5 @@
-import Link from "next/link";
 import HomeCharacterShowcase from "@/components/HomeCharacterShowcase";
+import StartTestButton from "@/components/StartTestButton";
 
 // 첫 화면에 보여줄 3가지 특징 카드 데이터
 const FEATURES = [
@@ -47,16 +47,8 @@ export default function Home() {
         {/* 제목 아래: 3초마다 다른 유형으로 바뀌는 3D 캐릭터 */}
         <HomeCharacterShowcase />
 
-        {/* 검사 시작하기 버튼 (/test 경로로 이동, 한눈에 띄도록 아주 큼직하게 배치) */}
-        <Link
-          href="/test"
-          className="mt-7 flex min-h-[88px] w-full items-center justify-center gap-3 rounded-3xl bg-gradient-to-r from-[#ff8fb1] via-[#c79dff] to-[#8cc8ff] px-8 py-6 text-2xl font-extrabold text-white shadow-lg shadow-purple-200/90 transition hover:scale-[1.01] hover:shadow-xl active:scale-[0.99]"
-        >
-          <span>검사 시작하기</span>
-          <span aria-hidden="true" className="text-2xl">
-            →
-          </span>
-        </Link>
+        {/* 검사 시작하기 버튼 (로그인 상태에 따라 /test 또는 /login으로 이동) */}
+        <StartTestButton />
       </section>
 
       {/* 특징 카드 3개 영역 */}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import Link from "next/link";
+import HeaderAuthNav from "@/components/HeaderAuthNav";
 import "./globals.css";
 
 // Google Fonts에서 Noto Sans KR 글꼴을 불러옵니다.
@@ -64,15 +65,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span>몽글 MBTI</span>
             </Link>
 
-            {/* 오른쪽: 메뉴 영역 (현재는 "유형 도감" 하나만 배치) */}
-            <nav aria-label="주 메뉴">
-              <Link
-                href="/types"
-                className="inline-flex items-center rounded-full bg-white/85 px-4 py-2 text-sm font-semibold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
-              >
-                유형 도감
-              </Link>
-            </nav>
+            {/* 오른쪽: 메뉴 영역 (유형 도감 + 로그인/내 기록) */}
+            <HeaderAuthNav />
           </header>
 
           {/* 각 페이지의 실제 내용이 들어가는 본문 영역 */}
