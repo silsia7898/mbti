@@ -1,57 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "./AuthProvider";
 
-// 헤더 오른쪽에 표시할 메뉴 (유형 도감 + 로그인 상태에 따라 로그인/내 기록 버튼)
+// 헤더 오른쪽에 표시할 메뉴 (375px 휴대폰 화면에서도 넘치지 않도록 간결하게 구성)
 export default function HeaderAuthNav() {
-  const [userName, setUserName] = useState<string | null>(null);
+  const router = useRouter();
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    // 현재 로그인한 사용자 정보를 가져옵니다.
-    supabase.auth.getUser().then(({ data }) => {
-      const name = data.user?.user_metadata?.name;
-      setUserName(typeof name === "string" && name ? name : data.user ? "회원" : null);
-    });
-
-    // 로그인·로그아웃 상태가 바뀔 때마다 헤더를 자동으로 업데이트합니다.
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      const name = session?.user?.user_metadata?.name;
-      setUserName(
-        typeof name === "string" && name ? name : session?.user ? "회원" : null
-      );
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  // 로그아웃 처리 후 홈으로 이동
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
-    <nav aria-label="주 메뉴" className="flex items-center gap-2">
+    <nav aria-label="주 메뉴" className="flex shrink-0 items-center gap-1.5">
       <Link
         href="/types"
-        className="inline-flex items-center rounded-full bg-white/85 px-3.5 py-2 text-xs font-semibold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+        className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-semibold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
       >
         유형 도감
       </Link>
 
-      {userName ? (
-        <Link
-          href="/mypage"
-          className="inline-flex items-center rounded-full bg-[#eef9f4] px-3.5 py-2 text-xs font-bold text-[#2f7d64] shadow-sm ring-1 ring-[#bce5d4] transition hover:bg-[#e1f5ec]"
-        >
-          {userName}님
-        </Link>
-      ) : (
-        <Link
-          href="/login"
-          className="inline-flex items-center rounded-full bg-white/85 px-3.5 py-2 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
-        >
-          로그인
-        </Link>
-      )}
+      {/* 로그인 상태를 확인하는 짧은 순간에는 자리를 비워 두어 메뉴 깜빡임을 방지합니다. */}
+      {!loading &&
+        (user ? (
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex cursor-pointer whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-pink-50 hover:text-[#c93b6b]"
+          >
+            로그아웃
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+          >
+            로그인
+          </Link>
+        ))}
     </nav>
   );
 }
