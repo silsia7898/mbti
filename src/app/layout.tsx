@@ -12,10 +12,20 @@ const notoSansKr = Noto_Sans_KR({
   weight: ["400", "500", "700", "800"],
 });
 
-// 브라우저 탭 제목과 검색 엔진 설명을 한국어로 설정합니다.
+// 브라우저 탭 제목, 설명, 링크 공유 미리보기(Open Graph) 기본 설정
 export const metadata: Metadata = {
-  title: "몽글 MBTI",
+  title: {
+    default: "몽글 MBTI",
+    template: "%s | 몽글 MBTI",
+  },
   description: "12개 질문으로 알아보는 나의 3D 동물 성격 유형 검사",
+  openGraph: {
+    title: "몽글 MBTI",
+    description: "12개 질문으로 알아보는 나의 3D 동물 성격 유형 검사",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "몽글 MBTI",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

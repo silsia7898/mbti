@@ -1,9 +1,39 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getMbtiTypeInfo } from "@/data/types";
 import ShareResultButton from "@/components/ShareResultButton";
 import SaveResultButton from "@/components/SaveResultButton";
 import CharacterViewer from "@/components/three/CharacterViewer";
+
+// 결과 페이지 URL의 유형 코드에 맞춰 동적으로 제목과 Open Graph 미리보기를 생성합니다.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ type: string }>;
+}): Promise<Metadata> {
+  const { type } = await params;
+  const typeInfo = getMbtiTypeInfo(type);
+
+  if (!typeInfo) {
+    return {
+      title: "없는 유형",
+      description: "존재하지 않는 성격 유형입니다.",
+    };
+  }
+
+  const pageTitle = `${typeInfo.code} ${typeInfo.nickname}`;
+  return {
+    title: pageTitle,
+    description: typeInfo.summary,
+    openGraph: {
+      title: `${pageTitle} | 몽글 MBTI`,
+      description: typeInfo.summary,
+      type: "website",
+      locale: "ko_KR",
+    },
+  };
+}
 
 // 실제로 params를 읽어 결과 화면을 렌더링하는 내부 컴포넌트
 async function ResultContent({
