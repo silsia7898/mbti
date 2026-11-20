@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { getMbtiTypeInfo } from "@/data/types";
 import ShareResultButton from "@/components/ShareResultButton";
+import SaveResultButton from "@/components/SaveResultButton";
 import CharacterViewer from "@/components/three/CharacterViewer";
 
 // 실제로 params를 읽어 결과 화면을 렌더링하는 내부 컴포넌트
@@ -151,15 +152,19 @@ async function ResultContent({
         </div>
       </section>
 
-      {/* 6) 버튼 2개: "다시 검사하기"(/test), "결과 공유하기"(주소 복사) */}
-      <div className="flex gap-3 pt-1">
-        <Link
-          href="/test"
-          className="flex flex-1 items-center justify-center rounded-2xl bg-white/95 px-5 py-4 text-base font-extrabold text-[#4c3b7a] shadow-sm ring-1 ring-purple-100 transition hover:bg-white"
-        >
-          다시 검사하기
-        </Link>
-        <ShareResultButton />
+      {/* 6) 내 기록에 저장 + 다시 검사하기 / 결과 공유하기 버튼 */}
+      <div className="flex flex-col gap-3 pt-1">
+        <SaveResultButton typeCode={typeInfo.code} />
+
+        <div className="flex gap-3">
+          <Link
+            href="/test"
+            className="flex flex-1 items-center justify-center rounded-2xl bg-white/95 px-5 py-4 text-base font-extrabold text-[#4c3b7a] shadow-sm ring-1 ring-purple-100 transition hover:bg-white"
+          >
+            다시 검사하기
+          </Link>
+          <ShareResultButton />
+        </div>
       </div>
     </div>
   );

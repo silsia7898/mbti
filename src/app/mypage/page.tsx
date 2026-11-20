@@ -5,12 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
-import { getMbtiTypeInfo } from "@/data/types";
+import CharacterViewer from "@/components/three/CharacterViewer";
+import { getMbtiTypeInfo, type MbtiCode } from "@/data/types";
 
 interface SavedResultRow {
   id: number;
   mbti_type: string;
   created_at: string;
+}
+
+// 날짜를 "2026.11.17" 형식으로 바꿔주는 함수
+function formatDotDate(isoString: string): string {
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}.${month}.${day}`;
 }
 
 // 회원이 저장한 검사 결과를 다시 보고 삭제할 수 있는 마이페이지
@@ -22,12 +32,14 @@ export default function MyPage() {
 
   useEffect(() => {
     if (authLoading) return;
+
+    // 로그아웃 상태면 로그인 후 마이페이지로 돌아오도록 보냅니다.
     if (!user) {
-      setFetching(false);
+      router.replace("/login?next=/mypage");
       return;
     }
 
-    // 최신순으로 내 검사 결과를 불러옵니다.
+    // 내 검사 기록을 최신순으로 불러옵니다.
     supabase
       .from("test_results")
       .select("id, mbti_type, created_at")
@@ -36,47 +48,23 @@ export default function MyPage() {
         if (data) setResults(data);
         setFetching(false);
       });
-  }, [user, authLoading]);
+  }, [user, authLoading, router]);
 
-  // 저장된 결과 1개 삭제
+  // 정말 지울지 확인한 뒤 삭제하고 목록에서 바로 제거합니다.
   const handleDelete = async (id: number) => {
+    const confirmed = window.confirm("이 검사 기록을 정말 삭제할까요?");
+    if (!confirmed) return;
+
     const { error } = await supabase.from("test_results").delete().eq("id", id);
     if (!error) {
       setResults((prev) => prev.filter((item) => item.id !== id));
     }
   };
 
-  // 로그아웃 후 홈으로 이동
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
-
-  if (authLoading || fetching) {
+  if (authLoading || fetching || !user) {
     return (
       <div className="flex flex-1 items-center justify-center text-sm font-bold text-[#6b6285]">
-        내 기록을 불러오는 중...
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <section className="flex w-full flex-col items-center rounded-3xl bg-white/90 px-6 py-10 text-center shadow-lg shadow-teal-100/70 ring-1 ring-white">
-          <h1 className="text-xl font-extrabold text-[#2e294e]">
-            로그인이 필요해요
-          </h1>
-          <p className="mt-2 text-xs text-[#6b6285]">
-            로그인하면 검사 결과를 저장하고 다시 볼 수 있어요.
-          </p>
-          <Link
-            href="/login?next=/mypage"
-            className="mt-6 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#ff8fb1] via-[#c79dff] to-[#8cc8ff] px-6 py-3.5 text-sm font-extrabold text-white shadow-md"
-          >
-            로그인하러 가기
-          </Link>
-        </section>
+        불러오는 중...
       </div>
     );
   }
@@ -86,78 +74,85 @@ export default function MyPage() {
     (user.user_metadata?.name as string | undefined) ||
     "회원";
 
+  const latestTypeInfo =
+    results.length > 0 ? getMbtiTypeInfo(results[0].mbti_type) : undefined;
+
   return (
     <div className="flex flex-1 flex-col gap-4">
-      {/* 상단 회원 인사 및 로그아웃 버튼 */}
-      <section className="flex items-center justify-between rounded-3xl bg-white/90 px-5 py-5 shadow-sm ring-1 ring-white">
-        <div>
-          <p className="text-xs font-bold text-[#2f7d64]">반가워요!</p>
-          <h1 className="text-xl font-extrabold text-[#2e294e]">
-            {nickname}님의 검사 기록
-          </h1>
-        </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="cursor-pointer rounded-full bg-[#f7fbf9] px-3.5 py-2 text-xs font-bold text-[#6b6285] ring-1 ring-[#dceee6] transition hover:bg-pink-50 hover:text-[#c93b6b]"
-        >
-          로그아웃
-        </button>
+      {/* 맨 위: "닉네임 님의 기록" 과 가입 이메일 */}
+      <section className="rounded-3xl bg-white/90 px-5 py-5 shadow-sm ring-1 ring-white">
+        <h1 className="text-xl font-extrabold text-[#2e294e]">
+          {nickname} 님의 기록
+        </h1>
+        {user.email && (
+          <p className="mt-1 text-xs font-medium text-[#6b6285]">
+            {user.email}
+          </p>
+        )}
       </section>
 
-      {/* 저장된 검사 결과 목록 */}
+      {/* 가장 최근에 저장한 유형의 3D 캐릭터 */}
+      {latestTypeInfo && (
+        <section
+          className="flex flex-col items-center rounded-3xl px-5 pb-4 pt-3 text-center shadow-sm ring-1 ring-white"
+          style={{
+            background: `linear-gradient(180deg, ${latestTypeInfo.color}66 0%, rgba(255,255,255,0.92) 100%)`,
+          }}
+        >
+          <span className="rounded-full bg-white/85 px-3 py-1 text-[11px] font-bold text-[#4c3b7a]">
+            최근 결과 · {latestTypeInfo.code} ({latestTypeInfo.character.name})
+          </span>
+          <CharacterViewer
+            typeCode={latestTypeInfo.code as MbtiCode}
+            className="h-[230px] w-full"
+          />
+        </section>
+      )}
+
+      {/* 내 검사 기록 목록 (최신순) 또는 빈 상태 안내 */}
       {results.length === 0 ? (
         <section className="flex flex-1 flex-col items-center justify-center rounded-3xl bg-white/85 px-6 py-12 text-center shadow-sm ring-1 ring-white">
           <p className="text-sm font-bold text-[#574f70]">
-            아직 저장된 검사 결과가 없어요.
+            아직 저장한 결과가 없어요
           </p>
           <Link
             href="/test"
             className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#ff8fb1] via-[#c79dff] to-[#8cc8ff] px-6 py-3.5 text-sm font-extrabold text-white shadow-md"
           >
-            지금 검사하러 가기
+            검사하러 가기
           </Link>
         </section>
       ) : (
-        <ul className="flex flex-col gap-3">
+        <ul className="flex flex-col gap-2.5">
           {results.map((row) => {
             const typeInfo = getMbtiTypeInfo(row.mbti_type);
-            const dateLabel = new Date(row.created_at).toLocaleDateString(
-              "ko-KR",
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            );
-
             return (
               <li
                 key={row.id}
-                className="flex items-center justify-between rounded-3xl bg-white/90 px-5 py-4 shadow-sm ring-1 ring-white"
+                className="flex items-center justify-between rounded-2xl bg-white/90 px-4 py-3.5 shadow-sm ring-1 ring-white"
               >
                 <Link
                   href={`/result/${row.mbti_type}`}
-                  className="flex flex-1 items-center gap-3.5"
+                  className="flex flex-1 items-center gap-2.5 overflow-hidden"
                 >
+                  <span className="shrink-0 text-xs font-semibold text-[#8a82a1]">
+                    {formatDotDate(row.created_at)}
+                  </span>
                   <span
-                    className="flex h-12 w-14 shrink-0 items-center justify-center rounded-2xl text-sm font-black text-[#2e294e]"
+                    className="shrink-0 rounded-xl px-2.5 py-1 text-xs font-black text-[#2e294e]"
                     style={{ backgroundColor: typeInfo?.color ?? "#eef9f4" }}
                   >
                     {row.mbti_type}
                   </span>
-                  <div>
-                    <p className="text-sm font-extrabold text-[#2e294e]">
-                      {typeInfo?.character.name ?? row.mbti_type}
-                    </p>
-                    <p className="text-xs text-[#8a82a1]">{dateLabel}</p>
-                  </div>
+                  <span className="truncate text-xs font-bold text-[#4a4363]">
+                    {typeInfo?.nickname ?? ""}
+                  </span>
                 </Link>
 
                 <button
                   type="button"
                   onClick={() => handleDelete(row.id)}
-                  className="ml-3 cursor-pointer rounded-full px-3 py-1.5 text-xs font-bold text-[#a39bb8] transition hover:bg-pink-50 hover:text-[#c93b6b]"
+                  className="ml-2 shrink-0 cursor-pointer rounded-full px-2.5 py-1 text-xs font-bold text-[#a39bb8] transition hover:bg-pink-50 hover:text-[#c93b6b]"
                 >
                   삭제
                 </button>

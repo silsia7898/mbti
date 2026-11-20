@@ -17,10 +17,10 @@ export default function HeaderAuthNav() {
   };
 
   return (
-    <nav aria-label="주 메뉴" className="flex shrink-0 items-center gap-1.5">
+    <nav aria-label="주 메뉴" className="flex shrink-0 items-center gap-1">
       <Link
         href="/types"
-        className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-semibold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+        className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-2.5 py-1.5 text-xs font-semibold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
       >
         유형 도감
       </Link>
@@ -28,17 +28,25 @@ export default function HeaderAuthNav() {
       {/* 로그인 상태를 확인하는 짧은 순간에는 자리를 비워 두어 메뉴 깜빡임을 방지합니다. */}
       {!loading &&
         (user ? (
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="inline-flex cursor-pointer whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-pink-50 hover:text-[#c93b6b]"
-          >
-            로그아웃
-          </button>
+          <>
+            <Link
+              href="/mypage"
+              className="inline-flex whitespace-nowrap items-center rounded-full bg-[#eef9f4] px-2.5 py-1.5 text-xs font-bold text-[#2f7d64] shadow-sm ring-1 ring-[#bce5d4] transition hover:bg-[#e1f5ec]"
+            >
+              마이페이지
+            </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="inline-flex cursor-pointer whitespace-nowrap items-center rounded-full bg-white/85 px-2.5 py-1.5 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-pink-50 hover:text-[#c93b6b]"
+            >
+              로그아웃
+            </button>
+          </>
         ) : (
           <Link
             href="/login"
-            className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-2 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
+            className="inline-flex whitespace-nowrap items-center rounded-full bg-white/85 px-3 py-1.5 text-xs font-bold text-[#5b4b8a] shadow-sm ring-1 ring-purple-100 transition hover:bg-purple-50"
           >
             로그인
           </Link>
